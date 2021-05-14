@@ -5,292 +5,12 @@
 - [ ] [Expert](./src/Expert)
 
 ---
-## priority_queue
-<details>
-  <summary>Details</summary>
-  <p>
-
-```cpp
-class CustomType {
-public:
-    int id;
-    int value;
-    
-    CustomType(int id, int value) {
-        this->id = id;
-        this->value = value;
-    }
-    
-    bool operator<(const CustomType &other) const {
-        return this->id == other.id ? this->value > other.value : this->id < other.id;
-    }
-};
-
-priority_queue<CustomType, vector<CustomType>> priorityQueue;
-
-priority_queue<CustomType, vector<CustomType>> priorityQueue;
-
-priorityQueue.emplace(1, 1);
-priorityQueue.emplace(1, 2);
-priorityQueue.emplace(1, 3);
-priorityQueue.emplace(2, 2);
-priorityQueue.emplace(3, 2);
-priorityQueue.emplace(4, 2);
-priorityQueue.emplace(5, 2);
-priorityQueue.emplace(5, 3);
-priorityQueue.emplace(5, 4);
-priorityQueue.emplace(5, 1);
-
-while (!priorityQueue.empty()) {
-    printf("%d %d\n", priorityQueue.top().id, priorityQueue.top().value);
-    priorityQueue.pop();
-}
-//5 1
-//5 2
-//5 3
-//5 4
-//4 2
-//3 2
-//2 2
-//1 1
-//1 2
-//1 3
-```
-  </p>
-</details>
-
----
-## Pair
-```cpp
-pair<int, char> a;
-
-a = make_pair(1, 'c');
-//a = {1, 'c'};
-printf("%d %c\n", a.first, a.second);
-```
-
----
-## Lower Bound, Upper Bound
-```c++
-template<class T> int lowerBound(const std::vector<T>& list, int start, int end, int keyValue, std::function<int(const T&, const T&)> comp) {
-    int lowerBound = end + 1;
-    while (start <= end) {
-        int mid = (start + end) / 2;
-        
-        if (comp(list[mid], keyValue) >= 0) {   // list[mid] >= keyValue
-            lowerBound = mid;
-            end = mid - 1;
-        }
-        else {
-        s   tart = mid + 1;
-        }
-    }
-    
-    return lowerBound;
-}
-
-template<class T> int upperBound(const std::vector<T>& list, int start, int end, int keyValue, std::function<int(const T&, const T&)> comp) {
-    int upperBound = start - 1;
-    while (start <= end) {
-        int mid = (start + end) / 2;
-        
-        if (comp(list[mid], keyValue) <= 0) {   // list[mid] <= keyValue
-            upperBound = mid;
-            start = mid + 1;
-        }
-        else {
-            end = mid - 1;
-        }
-    }
-    
-    return upperBound;
-}
-```
-
----
-## Sorting
-> 안정/불안정 정렬, 제자리 정렬 
-
-[./src/lib/header/sorting_lib.h](./src/lib/header/sorting_lib.h)
-
-### Selection Sort
-<details>
-  <summary>Details</summary>
-  <p>
-    
-```cpp
-template<class T> void selectionSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
-    for (int i = left; i < right; i++) {
-        int max_index = i;
-
-        for (int j = i + 1; j <= right; j++) {
-            if (comp(list[j], list[max_index])) {
-                max_index = j;
-            }
-        }
-
-        if (i != max_index) {
-            //swap(list[i], list[max_index]);
-            T temp = list[i];
-            list[i] = list[max_index];
-            list[max_index] = temp;
-        }
-    }
-}
-```
-  </p>
-</details>
-
-### Insertion Sort
-<details>
-  <summary>Details</summary>
-  <p>
-    
-```cpp
-template<class T> void insertionSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
-    for (int i = left + 1; i <= right; i++) {
-        for (int j = i; j > 0 && comp(list[j], list[j - 1]); j--) {
-            //swap(list[j], list[j - 1]);
-            T temp = list[j];
-            list[j] = list[j - 1];
-            list[j - 1] = temp;
-        }
-
-    }
-}
-```
-  </p>
-</details>
-
-### Bubble Sort
-<details>
-  <summary>Details</summary>
-  <p>
-    
-```cpp
-template<class T> void bubbleSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
-    for (int i = left; i < right; i++) {
-        bool isSwapped = false;
-
-        for (int j = left; j < right - i + left; j++) {
-            if (comp(list[j + 1], list[j])) {
-                //swap(list[j], list[j + 1]);
-                T temp = list[j];
-                list[j] = list[j + 1];
-                list[j + 1] = temp;
-                isSwapped = true;
-            }
-        }
-
-        if (!isSwapped) {
-            break;
-        }
-    }
-}
-```
-  </p>
-</details>
-
-### Quick Sort
-<details>
-  <summary>Details</summary>
-  <p>
-    
-```cpp
-template<class T> void quickSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
-    if (left >= right) {
-        return;
-    }
-
-    int index = left;
-    const int pivot = left;
-
-    for (int i = left + 1; i <= right; i++) {
-        if (comp(list[i], list[pivot])) {
-            swap(list[i], list[++index]);
-        }
-    }
-
-    swap(list[pivot], list[index]);
-    quickSort(list, left, index - 1, comp);
-    quickSort(list, index + 1, right, comp);
-}
-```
-  </p>
-</details>
-
-### Merge Sort
-<details>
-  <summary>Details</summary>
-  <p>
-    
-```cpp
-template<class T> void mergeSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
-    if (left >= right) {
-        return;
-    }
-
-    int mid = (left + right) / 2;
-    mergeSort(list, left, mid, comp);
-    mergeSort(list, mid + 1, right, comp);
-
-
-    // Merge left / right
-    vector<T> sorted(right - left + 1);
-
-    int l = left;
-    int r = mid + 1;
-    int index = 0;
-    while (l <= mid && r <= right) {
-        if (comp(list[l], list[r])) {
-            sorted[index++] = list[l++];
-        }
-        else {
-            sorted[index++] = list[r++];
-        }
-    }
-    while (l <= mid) {
-        sorted[index++] = list[l++];
-    }
-    while (r <= right) {
-        sorted[index++] = list[r++];
-    }
-
-    for (int i = left, index = 0; i <= right; i++) {
-        list[i] = sorted[index++];
-    }
-}
-```
-  </p>
-</details>
-
-### Heap Sort
-<details>
-  <summary>Details</summary>
-  <p>
-
-```cpp
-template<class T> void heapSort(std::vector<T>& list, int left, int right, std::function<bool(const T&, const T&)> comp) {
-    Heap<T> heap(comp);
-    for (int i = left; i <= right; i++) {
-        heap.push(list[i]);
-    }
-    
-    for (int i = left; i <= right; i++) {
-        list[i] = heap.pop();
-    }
-}
-```
-  </p>
-</details>
-
----
 ## Template Source
 <details>
   <summary>Details</summary>
   <p>
-    
-```cpp
+
+```c++
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -431,12 +151,304 @@ inline std::vector<std::string> split(std::string s, std::string delimiter)
 </details>
 
 ---
+## priority_queue
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+class CustomType {
+public:
+    int id;
+    int value;
+    
+    CustomType(int id, int value) {
+        this->id = id;
+        this->value = value;
+    }
+    
+    bool operator<(const CustomType &other) const {
+        return this->id == other.id ? this->value > other.value : this->id < other.id;
+    }
+};
+
+priority_queue<CustomType, vector<CustomType>> priorityQueue;
+
+priority_queue<CustomType, vector<CustomType>> priorityQueue;
+
+priorityQueue.emplace(1, 1);
+priorityQueue.emplace(1, 2);
+priorityQueue.emplace(1, 3);
+priorityQueue.emplace(2, 2);
+priorityQueue.emplace(3, 2);
+priorityQueue.emplace(4, 2);
+priorityQueue.emplace(5, 2);
+priorityQueue.emplace(5, 3);
+priorityQueue.emplace(5, 4);
+priorityQueue.emplace(5, 1);
+
+while (!priorityQueue.empty()) {
+    printf("%d %d\n", priorityQueue.top().id, priorityQueue.top().value);
+    priorityQueue.pop();
+}
+//5 1
+//5 2
+//5 3
+//5 4
+//4 2
+//3 2
+//2 2
+//1 1
+//1 2
+//1 3
+```
+  </p>
+</details>
+
+---
+## Pair
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+pair<int, char> a;
+
+a = make_pair(1, 'c');
+//a = {1, 'c'};
+printf("%d %c\n", a.first, a.second);
+```
+  </p>
+</details>
+
+---
+## Lower Bound, Upper Bound
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+template<class T> int lowerBound(const std::vector<T>& list, int start, int end, int keyValue, std::function<int(const T&, const T&)> comp) {
+    int lowerBound = end + 1;
+    while (start <= end) {
+        int mid = (start + end) / 2;
+        
+        if (comp(list[mid], keyValue) >= 0) {   // list[mid] >= keyValue
+            lowerBound = mid;
+            end = mid - 1;
+        }
+        else {
+        s   tart = mid + 1;
+        }
+    }
+    
+    return lowerBound;
+}
+
+template<class T> int upperBound(const std::vector<T>& list, int start, int end, int keyValue, std::function<int(const T&, const T&)> comp) {
+    int upperBound = start - 1;
+    while (start <= end) {
+        int mid = (start + end) / 2;
+        
+        if (comp(list[mid], keyValue) <= 0) {   // list[mid] <= keyValue
+            upperBound = mid;
+            start = mid + 1;
+        }
+        else {
+            end = mid - 1;
+        }
+    }
+    
+    return upperBound;
+}
+```
+  </p>
+</details>
+
+---
+## Sorting
+> 안정/불안정 정렬, 제자리 정렬 
+
+[./src/lib/header/sorting_lib.h](./src/lib/header/sorting_lib.h)
+
+### Selection Sort
+<details>
+  <summary>Details</summary>
+  <p>
+    
+```c++
+template<class T> void selectionSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
+    for (int i = left; i < right; i++) {
+        int max_index = i;
+
+        for (int j = i + 1; j <= right; j++) {
+            if (comp(list[j], list[max_index])) {
+                max_index = j;
+            }
+        }
+
+        if (i != max_index) {
+            //swap(list[i], list[max_index]);
+            T temp = list[i];
+            list[i] = list[max_index];
+            list[max_index] = temp;
+        }
+    }
+}
+```
+  </p>
+</details>
+
+### Insertion Sort
+<details>
+  <summary>Details</summary>
+  <p>
+    
+```c++
+template<class T> void insertionSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
+    for (int i = left + 1; i <= right; i++) {
+        for (int j = i; j > 0 && comp(list[j], list[j - 1]); j--) {
+            //swap(list[j], list[j - 1]);
+            T temp = list[j];
+            list[j] = list[j - 1];
+            list[j - 1] = temp;
+        }
+
+    }
+}
+```
+  </p>
+</details>
+
+### Bubble Sort
+<details>
+  <summary>Details</summary>
+  <p>
+    
+```c++
+template<class T> void bubbleSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
+    for (int i = left; i < right; i++) {
+        bool isSwapped = false;
+
+        for (int j = left; j < right - i + left; j++) {
+            if (comp(list[j + 1], list[j])) {
+                //swap(list[j], list[j + 1]);
+                T temp = list[j];
+                list[j] = list[j + 1];
+                list[j + 1] = temp;
+                isSwapped = true;
+            }
+        }
+
+        if (!isSwapped) {
+            break;
+        }
+    }
+}
+```
+  </p>
+</details>
+
+### Quick Sort
+<details>
+  <summary>Details</summary>
+  <p>
+    
+```c++
+template<class T> void quickSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
+    if (left >= right) {
+        return;
+    }
+
+    int index = left;
+    const int pivot = left;
+
+    for (int i = left + 1; i <= right; i++) {
+        if (comp(list[i], list[pivot])) {
+            swap(list[i], list[++index]);
+        }
+    }
+
+    swap(list[pivot], list[index]);
+    quickSort(list, left, index - 1, comp);
+    quickSort(list, index + 1, right, comp);
+}
+```
+  </p>
+</details>
+
+### Merge Sort
+<details>
+  <summary>Details</summary>
+  <p>
+    
+```c++
+template<class T> void mergeSort(std::vector<T>& list, int left, int right, std::function<bool(T, T)> comp) {
+    if (left >= right) {
+        return;
+    }
+
+    int mid = (left + right) / 2;
+    mergeSort(list, left, mid, comp);
+    mergeSort(list, mid + 1, right, comp);
+
+
+    // Merge left / right
+    vector<T> sorted(right - left + 1);
+
+    int l = left;
+    int r = mid + 1;
+    int index = 0;
+    while (l <= mid && r <= right) {
+        if (comp(list[l], list[r])) {
+            sorted[index++] = list[l++];
+        }
+        else {
+            sorted[index++] = list[r++];
+        }
+    }
+    while (l <= mid) {
+        sorted[index++] = list[l++];
+    }
+    while (r <= right) {
+        sorted[index++] = list[r++];
+    }
+
+    for (int i = left, index = 0; i <= right; i++) {
+        list[i] = sorted[index++];
+    }
+}
+```
+  </p>
+</details>
+
+### Heap Sort
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+template<class T> void heapSort(std::vector<T>& list, int left, int right, std::function<bool(const T&, const T&)> comp) {
+    Heap<T> heap(comp);
+    for (int i = left; i <= right; i++) {
+        heap.push(list[i]);
+    }
+    
+    for (int i = left; i <= right; i++) {
+        list[i] = heap.pop();
+    }
+}
+```
+  </p>
+</details>
+
+---
 ## Heap (Priority Queue)
 <details>
   <summary>Details</summary>
   <p>
 
-```cpp
+```c++
 #include <iostream>
 #include <vector>
 #include <functional>
