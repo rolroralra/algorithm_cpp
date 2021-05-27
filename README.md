@@ -603,4 +603,71 @@ public:
 ```
   </p>
 </details>
+    
+---
+## Matrix
+<details>
+    <summary>Details</summary>
+    <p>
 
+```c++
+class Matrix {
+public:
+    int size;
+    vector<vector<long long>> matrix;
+
+    Matrix(int n): size(n) {
+        matrix.resize(n, vector<long long>(n, 0));
+    }
+
+    Matrix operator*(const Matrix& right) const {
+        Matrix result(size);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
+                    result.matrix[i][j] += matrix[i][k] * right.matrix[k][j];
+                }
+            }
+        }
+        return result;
+    }
+
+    static Matrix id(int n) {
+        Matrix id(n);
+        for (int i = 0; i < n; i++) {
+            id.matrix[i][i] = 1;
+        }
+        return id;
+    }
+
+    static Matrix exponent(Matrix m, int power) {
+        if (power == 0) {
+            return Matrix::id(m.size);
+        }
+
+        Matrix half = Matrix::exponent(m, power / 2);
+        return power % 2 == 0 ? half * half : half * half * m;
+    }
+
+    Matrix exponent(int power) const {
+        if (power == 0) {
+            return Matrix::id(size);
+        }
+
+        Matrix half = this->exponent(power / 2);
+
+        return power % 2 == 0 ? half * half : half * half * (*this);
+    }
+
+    void print() const {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                printf("%ld ", matrix[i][j]);
+            }
+            printf("\n");
+        }
+    }
+}
+```
+  </p>
+</details>
