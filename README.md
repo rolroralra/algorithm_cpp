@@ -674,6 +674,11 @@ public:
     
 ---
 ## Eratosthenes Sieve (에라토스테네스의 체)
+    
+<details>
+    <summary>Details</summary>
+    <p>
+      
 ```cpp
 #include <bits/stdc++.h>
 
@@ -737,3 +742,5 @@ void setComposite(int index) {
     sieve[index / 8] &= ~(1 << (index % 8));
 }
 ```
+  </p>
+</details>
