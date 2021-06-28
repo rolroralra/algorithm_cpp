@@ -1047,3 +1047,97 @@ int dfs(int currIndex, bool isRoot, int* visit) {
   </p>
 </details>
 
+---
+## Articulation Edge (단절선)
+<details>
+    <summary>Details</summary>
+    <p>
+
+```c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define MAX_V 100000
+
+int V, E;
+vector<int> *adjList;
+int isVisited[MAX_V + 1];
+int serialNumber = 0;
+
+vector<pair<int, int>> articulationEdgeList;
+
+int dfs(int currIndex, int prevIndex, int* visitCount);
+
+int main() {
+    freopen("../src/sample_input.txt", "r", stdin);
+
+    scanf("%d %d\n", &V, &E);
+
+    adjList = (vector<int> *) calloc(V + 1, sizeof(vector<int>));
+    memset(isVisited, 0x00, sizeof(isVisited));
+    articulationEdgeList.clear();
+
+    for (int i = 0; i < E; i++) {
+        int from, to;
+        scanf("%d %d\n", &from, &to);
+
+        adjList[from].push_back(to);
+        adjList[to].push_back(from);
+    }
+
+
+    for (int v = 1; v <= V; v++) {
+        if (!isVisited[v]) {
+            dfs(v, -1, isVisited);
+        }
+    }
+
+    sort(articulationEdgeList.begin(), articulationEdgeList.end());
+
+    printf("%lu\n", articulationEdgeList.size());
+    for (const auto &item : articulationEdgeList) {
+        printf("%d %d\n", item.first, item.second);
+    }
+    return 0;
+}
+
+int dfs(int currIndex, int prevIndex, int* visitCount) {
+    visitCount[currIndex] = ++serialNumber;
+
+    int returnValue = visitCount[currIndex];
+
+    for (const auto &nextIndex : adjList[currIndex]) {
+        if (nextIndex == prevIndex) {
+            continue;
+        }
+
+        if (!visitCount[nextIndex]) {
+
+            int minSerialNumberFromNextIndex = dfs(nextIndex, currIndex, visitCount);
+            returnValue = min(returnValue, minSerialNumberFromNextIndex);
+
+            if (minSerialNumberFromNextIndex > visitCount[currIndex]) {
+                int a = currIndex;
+                int b = nextIndex;
+
+                if (a > b) {
+                    a ^= b;
+                    b ^= a;
+                    a ^= b;
+                }
+
+                articulationEdgeList.emplace_back(a, b);
+            }
+
+        }
+        else {
+            returnValue = min(returnValue, visitCount[nextIndex]);
+        }
+    }
+
+    return returnValue; // minSerialNumberFromCurrIndex
+}
+```
+  </p>
+</details>
