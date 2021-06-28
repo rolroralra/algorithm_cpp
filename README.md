@@ -744,3 +744,306 @@ void setComposite(int index) {
 ```
   </p>
 </details>
+
+---
+## SegmentTree
+<details>
+    <summary>Details</summary>
+    <p>
+
+```c++
+class SegmentTree {
+    int *tree[3];
+    int treeSize;
+    int originalDataSize;
+
+public:
+    void update(int index, int value) {
+        update(index, value, 0, 0, originalDataSize - 1);
+    }
+
+    int queryMax(int left, int right) {
+        return queryMax(left, right, 0, 0, originalDataSize - 1);
+    }
+
+    int queryMin(int left, int right) {
+        return queryMin(left, right, 0, 0, originalDataSize - 1);
+    }
+
+    int querySum(int left, int right) {
+        return querySum(left, right, 0, 0, originalDataSize - 1);
+    }
+
+    SegmentTree(int size) : originalDataSize(size){
+        for (treeSize = 1; treeSize < size; treeSize <<= 1);
+        treeSize = treeSize * 2 - 1;
+
+        tree[0] = (int*) calloc(treeSize, sizeof(int));
+        tree[1] = (int*) calloc(treeSize, sizeof(int));
+        tree[2] = (int*) calloc(treeSize, sizeof(int));
+
+    }
+
+private:
+    void update(int index, int value, int node, int nodeLeft, int nodeRight) {
+        if (index < nodeLeft || nodeRight < index) {
+            return;
+        }
+
+        if (nodeLeft == nodeRight) {
+            tree[0][node] = value;
+            tree[1][node] = value;
+            tree[2][node] = value;
+            return;
+        }
+
+        int leftNode = node * 2 + 1;
+        int rightNode = leftNode + 1;
+        int nodeMid = (nodeLeft + nodeRight) / 2;
+
+        update(index, value, leftNode, nodeLeft, nodeMid);
+        update(index, value, rightNode, nodeMid + 1, nodeRight);
+
+        tree[0][node] = max(tree[0][leftNode], tree[0][rightNode]);
+        tree[1][node] = min(tree[1][leftNode], tree[1][rightNode]);
+        tree[2][node] = tree[2][leftNode] + tree[2][rightNode];
+    }
+
+    int queryMax(int left, int right, int node, int nodeLeft, int nodeRight) {
+        if (right < nodeLeft || nodeRight < left) {
+            return INT32_MIN;
+        }
+
+        if (left <= nodeLeft && nodeRight <= right) {
+            return tree[0][node];
+        }
+
+        int leftNode = node * 2 + 1;
+        int rightNode = leftNode + 1;
+        int nodeMid = (nodeLeft + nodeRight) / 2;
+
+        return max(queryMax(left, right, leftNode, nodeLeft, nodeMid), queryMax(left, right, rightNode, nodeMid + 1, nodeRight));
+    }
+
+    int queryMin(int left, int right, int node, int nodeLeft, int nodeRight) {
+        if (right < nodeLeft || nodeRight < left) {
+            return INT32_MAX;
+        }
+
+        if (left <= nodeLeft && nodeRight <= right) {
+            return tree[1][node];
+        }
+
+        int leftNode = node * 2 + 1;
+        int rightNode = leftNode + 1;
+        int nodeMid = (nodeLeft + nodeRight) / 2;
+
+        return min(queryMin(left, right, leftNode, nodeLeft, nodeMid), queryMin(left, right, rightNode, nodeMid + 1, nodeRight));
+    }
+
+    int querySum(int left, int right, int node, int nodeLeft, int nodeRight) {
+        if (right < nodeLeft || nodeRight < left) {
+            return 0;
+        }
+
+        if (left <= nodeLeft && nodeRight <= right) {
+            return tree[2][node];
+        }
+
+        int leftNode = node * 2 + 1;
+        int rightNode = leftNode + 1;
+        int nodeMid = (nodeLeft + nodeRight) / 2;
+
+        return querySum(left, right, leftNode, nodeLeft, nodeMid) + querySum(left, right, rightNode, nodeMid + 1, nodeRight);
+    }
+};
+```
+  </p>
+</details>
+
+---
+## BinaryIndexTree
+<details>
+    <summary>Details</summary>
+    <p>
+
+```c++
+class BinaryIndexTree {
+private:
+    int* tree;
+    int originalDataSize;
+    int baseIndex;
+    int treeSize;
+    static const int ROOT_INDEX = 0;
+
+    bool checkBaseIndex(int index) {
+        return index >= 0 && index < originalDataSize;
+    }
+    
+    void refresh(int node) {
+        if (node >= baseIndex) {
+            return;
+        }
+
+        int leftNode = node * 2 + 1;
+        int rightNode = leftNode + 1;
+        tree[node] = min(tree[leftNode], tree[rightNode]);
+    }
+public:
+    BinaryIndexTree(int *arr, int size) : BinaryIndexTree(size) {
+        for (int i = 0; i < size; i++) {
+            update(i, arr[i]);
+        }
+    }
+
+    BinaryIndexTree(int size) : originalDataSize(size) {
+        for (baseIndex = 1; baseIndex < N; baseIndex<<=1);
+        treeSize = baseIndex * 2 - 1;
+        baseIndex--;
+
+        tree = (int*) calloc(treeSize, sizeof(int));
+    }
+
+    void update(int index, int value) {
+        if (!checkBaseIndex(index))
+            return;
+
+        int node = baseIndex + index;
+
+        tree[node] = value;
+
+        while (node > ROOT_INDEX) {
+            node = (node - 1) / 2;
+            refresh(node);
+        }
+    }
+
+    int query(int left, int right) {
+        if (!checkBaseIndex(left) || !checkBaseIndex(right)) {
+            return INT32_MAX;
+        }
+
+        int leftNode = baseIndex + left;
+        int rightNode = baseIndex + right;
+
+        int result = INT32_MAX;
+        while(leftNode < rightNode) {
+            if (leftNode % 2 == 0) {
+                result = min(result, tree[leftNode++]);
+            }
+
+            if (rightNode % 2 == 1) {
+                result = min(result, tree[rightNode--]);
+            }
+
+            leftNode = (leftNode - 1) / 2;
+            rightNode = (rightNode - 1) / 2;
+        }
+
+        if (leftNode == rightNode) {
+            result = min(result, tree[leftNode]);
+        }
+
+        return result;
+    }
+};
+```
+  </p>
+</details>
+
+---
+## FenwickTree
+> TODO
+
+---
+## Articulation Point (단절점)
+<details>
+    <summary>Details</summary>
+    <p>
+
+```c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define MAX_V 10000
+
+int V, E;
+vector<int> *adjList;
+int isVisited[MAX_V + 1];
+int serialNumber = 0;
+bool isArticulationPoint[MAX_V + 1];
+int countOfArticulationPoints = 0;
+
+int dfs(int currIndex, bool isRoot, int* visit);
+
+int main() {
+    freopen("../src/sample_input.txt", "r", stdin);
+
+    scanf("%d %d\n", &V, &E);
+
+    adjList = (vector<int> *) calloc(V + 1, sizeof(vector<int>));
+    memset(isVisited, 0x00, sizeof(isVisited));
+
+    for (int i = 0; i < E; i++) {
+        int from, to;
+        scanf("%d %d\n", &from, &to);
+
+        adjList[from].push_back(to);
+        adjList[to].push_back(from);
+    }
+
+
+    for (int v = 1; v <= V; v++) {
+        if (!isVisited[v]) {
+            dfs(v, true, isVisited);
+        }
+    }
+
+    printf("%d\n", countOfArticulationPoints);
+    for (int v = 1; v <= V; v++) {
+        if(!isArticulationPoint[v]) {
+            continue;
+        }
+
+        printf("%d ", v);
+    }
+    printf("\n");
+
+    return 0;
+}
+
+int dfs(int currIndex, bool isRoot, int* visit) {
+    visit[currIndex] = ++serialNumber;
+
+    int returnValue = visit[currIndex];
+
+    int spanningTreeChildCount = 0;
+    for (const auto &nextIndex : adjList[currIndex]) {
+        if (!visit[nextIndex]) {
+            spanningTreeChildCount++;
+
+            int minSerialNumberFromNextIndex = dfs(nextIndex, false, visit);
+            returnValue = min(returnValue, minSerialNumberFromNextIndex);
+
+            if (!isRoot && minSerialNumberFromNextIndex >= visit[currIndex]) {
+                countOfArticulationPoints += isArticulationPoint[currIndex] ? 0 : 1;
+                isArticulationPoint[currIndex] = true;
+            }
+        }
+        else {
+            returnValue = min(returnValue, visit[nextIndex]);
+        }
+    }
+
+    if (isRoot && spanningTreeChildCount >= 2) {
+        countOfArticulationPoints += isArticulationPoint[currIndex] ? 0 : 1;
+        isArticulationPoint[currIndex] = true;
+    }
+
+    return returnValue; // minSerialNumberFromCurrIndex
+}
+```
+  </p>
+</details>
+
