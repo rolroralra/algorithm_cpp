@@ -1141,3 +1141,146 @@ int dfs(int currIndex, int prevIndex, int* visitCount) {
 ```
   </p>
 </details>
+
+---
+## MST (Minimal Spanning Tree)
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define MAX_V 10000
+int V, E;
+
+void primAlgorithm() ;
+vector<pair<int, int>>* adjList;
+bool isVisited[MAX_V + 1];
+
+void kruskalAlgorithm() ;
+vector<tuple<int, int, int>> edgeList;
+int parent[MAX_V + 1];
+int find(int index);
+void merge(int leftIndex, int rightIndex);
+
+class comp {
+public:
+    bool operator() (const pair<int, int> &left, const pair<int, int> &right) {
+        return left.second > right.second;
+    }
+};
+
+int main() {
+    freopen("../src/sample_input.txt", "r", stdin);
+    scanf("%d %d\n", &V, &E);
+
+    adjList = static_cast<vector<pair<int, int>> *>(calloc(V + 1, sizeof(vector<pair<int, int>>)));
+
+    for (int i = 1; i <= V; i++) {
+        parent[i] = -1;
+    }
+
+
+    for (int i = 0; i < E; i++) {
+        int a, b, c;
+        scanf("%d %d %d\n", &a, &b, &c);
+
+        adjList[a].push_back(make_pair(b, c));
+        adjList[b].emplace_back(a, c);
+
+        edgeList.push_back(make_tuple(a, b, c));
+    }
+
+    primAlgorithm();
+//    kruskalAlgorithm();
+
+    return 0;
+}
+
+// Prim's Algorithm
+void primAlgorithm() {
+    int primAlgorithmResult = 0;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, comp> pq;
+    pq.emplace(1, 0);
+    while (!pq.empty()) {
+        int currIndex = pq.top().first;
+        int currEdgeLength = pq.top().second;
+        pq.pop();
+
+        if (isVisited[currIndex]) {
+            continue;
+        }
+
+        isVisited[currIndex] = true;
+        primAlgorithmResult += currEdgeLength;
+
+        for (const auto &nextInfo : adjList[currIndex]) {
+            int nextIndex = nextInfo.first;
+            int nextEdgeLength = nextInfo.second;
+
+            if (isVisited[nextIndex]) {
+                continue;
+            }
+
+            pq.emplace(nextIndex, nextEdgeLength);
+        }
+    }
+
+    printf("%d\n", primAlgorithmResult);
+}
+
+// Kruskal's Algorithm
+void kruskalAlgorithm() {
+    sort(edgeList.begin(), edgeList.end(), [](const tuple<int, int, int> &left, const tuple<int, int, int> &right)->bool{return get<2>(left) < get<2>(right);});
+
+    int kruskalALgorithmResult = 0;
+    for (int i = 0; i < E; i++) {
+        int a = get<0>(edgeList[i]);
+        int b = get<1>(edgeList[i]);
+        int c = get<2>(edgeList[i]);
+
+        if(find(a) == find(b)) {
+            continue;
+        }
+
+        kruskalALgorithmResult += c;
+        merge(a, b);
+    }
+
+    printf("%d\n", kruskalALgorithmResult);
+}
+
+// Find
+int find(int index) {
+    if (parent[index] < 0) {
+        return index;
+    }
+
+    // Path Comprehension
+    return parent[index] = find(parent[index]);
+}
+
+// Union
+void merge(int leftIndex, int rightIndex) {
+    int leftRootIndex = find(leftIndex);
+    int rightRootIndex = find(rightIndex);
+
+    if (leftRootIndex == rightRootIndex) {
+        return;
+    }
+
+    if (parent[leftRootIndex] > parent[rightRootIndex]) {
+        leftRootIndex ^= rightRootIndex;
+        rightRootIndex ^= leftRootIndex;
+        leftRootIndex ^= rightRootIndex;
+    }
+
+    parent[leftRootIndex] += parent[rightRootIndex];
+    parent[rightRootIndex] = leftRootIndex;
+}
+```
+  </p>
+</details>
