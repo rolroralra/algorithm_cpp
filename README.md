@@ -182,6 +182,97 @@ inline std::vector<std::string> split(std::string s, std::string delimiter)
 </details>
 
 ---
+## DFS, BFS (Depth First Search, Breadth First Search)
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+void dfsByRecursive(int currIndex, bool isRoot) {
+    isVisited[currIndex] = true;
+    printf("%d ", currIndex);
+
+    for (const auto &nextIndex : adjList[currIndex]) {
+        if (isVisited[nextIndex]) {
+            continue;
+        }
+
+        dfsByRecursive(nextIndex, false);
+    }
+    
+    isCompleted[currIndex] = true;
+
+    if (isRoot) {
+        printf("\n");
+    }
+}
+void dfsByStack(int startIndex) {
+    stack<int> stack;
+
+    stack.push(startIndex);
+    while(!stack.empty()) {
+        int currIndex = stack.top();
+        stack.pop();
+
+        if (isVisited[currIndex]) {
+            continue;
+        }
+
+        isVisited[currIndex] = true;
+        printf("%d ", currIndex);
+
+        for (const auto &nextIndex : adjList[currIndex]) {
+            if (isVisited[nextIndex]) {
+                continue;
+            }
+
+            stack.push(nextIndex);
+        }
+    }
+
+    printf("\n");
+}
+
+void bfsByQueue(int startIndex) {
+    queue<int> queue;
+
+    isVisited[startIndex] = true;
+    queue.push(startIndex);
+    while(!queue.empty()) {
+        int currIndex = queue.front();
+        queue.pop();
+
+        printf("%d ", currIndex);
+
+        for (const auto &nextIndex : adjList[currIndex]) {
+            if (isVisited[nextIndex]) {
+                continue;
+            }
+
+            isVisited[nextIndex] = true;
+            queue.push(nextIndex);
+        }
+
+//        int size = adjList[currIndex].size();
+//        for (int i = size - 1; i > -1; i--) {
+//            int nextIndex = adjList[currIndex][i];
+//
+//            if (isVisited[nextIndex]) {
+//                continue;
+//            }
+//
+//            isVisited[nextIndex] = true;
+//            queue.push(nextIndex);
+//        }
+    }
+
+    printf("\n");
+}
+```
+  </p>
+</details>
+
+---
 ## priority_queue
 <details>
   <summary>Details</summary>
