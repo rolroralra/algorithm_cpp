@@ -1044,7 +1044,65 @@ public:
 
 ---
 ## FenwickTree
-> TODO
+<details>
+  <summary>Details</summary>
+  <p>
+
+```c++
+class FenwickTree {
+public:
+    FenwickTree(int size) {
+        FenwickTree(size + 1, true);
+    }
+
+    FenwickTree(int size, bool isZeroBaseIndex) : size(size + 1), isZeroBaseIndex(isZeroBaseIndex){
+        fenwickTree = static_cast<long long int *>(calloc(size + 1, sizeof(long long)));
+    }
+
+    void update(int index, long long diffValue) {
+        if (isZeroBaseIndex) {
+            index++;
+        }
+
+        _update(index, diffValue);
+    }
+
+    long long query(int startInclusive, int endInclusive) {
+        if (isZeroBaseIndex) {
+            startInclusive++;
+            endInclusive++;
+        }
+
+        return _querySum(endInclusive) - _querySum(startInclusive - 1);
+    }
+private:
+    int size;
+    long long *fenwickTree;
+    bool isZeroBaseIndex;
+
+    void _update(int index, long long diffValue) {
+        while (index < size) {
+            fenwickTree[index] += diffValue;
+
+            index += index & (-index);
+        }
+    }
+
+    long long _querySum(int index) {
+        long long result = 0;
+        while(index > 0) {
+            result += fenwickTree[index];
+
+            index &= (index - 1);
+//            index -= index & (-index);
+        }
+
+        return result;
+    }
+};
+```
+  </p>
+</details>
 
 ---
 ## Articulation Point (단절점)
