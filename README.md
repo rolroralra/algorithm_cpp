@@ -1375,3 +1375,72 @@ void merge(int leftIndex, int rightIndex) {
 ```
   </p>
 </details>
+
+---
+## Topological Sort (위상정렬)
+
+<details>
+  <summary>Details</summary>
+  <p>
+
+### By using DFS with post-order
+```c++
+vector<int> topologicalSortByDFS() {
+    vector<int> sortedList;
+    stack<int> sortedStack;
+    
+    for (int i = 1; i <= N; i++) {
+        if(inDegree[i] == 0) {
+            _topologicalSortByDFS(i, sortedStack);
+        }
+    }
+    
+    while (!sortedStack.empty()) {
+        sortedList.push_back(sortedStack.top());
+        sortedStack.pop();
+    }
+    
+    return sortedList;
+}
+void _topologicalSortByDFS(int currIndex, stack<int> &sortedStack) {
+    isVisited[currIndex] = true;
+
+    for (const auto &nextIndex : adjList[currIndex]) {
+        if (!isVisited[nextIndex]) {
+            _topologicalSortByDFS(nextIndex, sortedStack);
+        }
+    }
+
+    isCompleted[currIndex] = true;
+    
+    sortedStack.push(currIndex);
+}
+```
+
+### By using BFS with in-degree
+```c++
+void topologicalSortByBFS() {
+    queue<int> q;
+    for (int i = 1; i <= N; i++) {
+        if (inDegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    while (!q.empty()) {
+        int currIndex = q.front();
+        q.pop();
+        
+        // Visit CurrIndex Process
+
+        // Next Child Node Process
+        for (auto &nextIndex : adjList[currIndex]) {
+            if ((--inDegree[nextIndex]) == 0) {
+                q.push(nextIndex);
+            }
+        }
+    }
+}
+```
+  </p>
+</details>
